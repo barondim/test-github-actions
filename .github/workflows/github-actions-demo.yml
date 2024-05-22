@@ -1,0 +1,34 @@
+name: GitHub Actions Demo
+run-name: GitHub Actions
+on:
+  workflow_dispatch:
+
+env:
+  DYNAWO_TAG: nightly
+
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          sparse-checkout: .github/release.js
+          sparse-checkout-cone-mode: false
+
+      - name: Test
+        uses: actions/github-script@v6
+        env:
+          body: |
+            Dynawo's nightly release. Compiled on *release* settings.
+            
+            **Don't use it for production**
+          draft: false
+          prerelease: true
+          release_name: Nightly
+          tag_name: ${{ env.DYNAWO_TAG }}
+          target_commitish: heads/master
+        with:
+          retries: 3
+          script: |
+            const release = require('.github/release.js')
+            await release({github, context, core, glob})
