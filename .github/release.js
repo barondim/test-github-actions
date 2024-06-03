@@ -47,7 +47,6 @@ module.exports = async ({github, context, core, glob}) => {
 
     // input parameters read from process.env (env: keyword in workflow.yml)
     const {
-      owner,                      // owner of the repository (current owner by default)
       repo,                       // repository (current repo by default)
       release_id,                 // id of the release to update, may be 'latest' to identify the latest release (required if no tag_name is given)
       tag_name:                   // tag to identify the release to update or to create a new release, created if not exist (required if no release_id is given)
@@ -66,7 +65,6 @@ module.exports = async ({github, context, core, glob}) => {
       before_body,                // more description prepended before body
       fail_on_files_errors,       // set to true to cause the script to fail if an error occurs while deleting or uploading assets (false by default)
     } = {
-      owner:                      getInput('owner', context.repo.owner),
       repo:                       getInput('repo', context.repo.repo),
       release_id:                 getInput('release_id'),
       tag_name:                   getInput('tag_name'),
@@ -84,26 +82,7 @@ module.exports = async ({github, context, core, glob}) => {
       fail_on_files_errors:       getBooleanInput('fail_on_files_errors', false),
     };
 
-    /*
-    console.log({
-      owner,
-      repo,
-      release_id,
-      tag_name: input_tag_name,
-      target_commitish: input_target_commitish,
-      files,
-      release_name,
-      body,
-      draft,
-      prerelease,
-      discussion_category_name,
-      generate_release_notes,
-      delete_release,
-      after_body,
-      before_body,
-      fail_on_files_errors
-    });
-    */
+    const owner = "dynawo";
 
     if (!input_tag_name && !release_id) {
       throw new Error("'release_id' or 'tag_name' is mandatory to identify or create a release");
@@ -138,6 +117,13 @@ module.exports = async ({github, context, core, glob}) => {
         throw new Error(`Unable to get a release for 'release_id=${release_id}': ${error.message}`);
       }
     }
+
+    var truc = github.rest.repos.getReleaseByTag({owner, repo, tag: input_tag_name});
+
+    console.log("POUIT data : " + truc.data);
+    console.log("POUIT status : " + truc.status);
+    console.log("POUIT url : " + truc.url);
+    console.log("POUIT headers : " + truc.headers);
 
     // getReleaseByTag() is unable to find draft releases
     // and non-draft couldn't be converted to draft
