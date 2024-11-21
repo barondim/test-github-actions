@@ -1,0 +1,7 @@
+name: Trigger another workflow in another repositoy (work in progress)
+on: [workflow_dispatch]
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Test"
